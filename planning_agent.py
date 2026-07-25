@@ -1,4 +1,5 @@
 from config import llm
+from tools import doctor_tool, medicine_tool
 
 def planning_agent(analysis):
 
@@ -16,6 +17,13 @@ Return only the recommendations as bullet points.
 """
 
     response = llm.invoke(prompt)
-
     plan = response.content.split("\n")
-    return plan
+    
+    doctor = doctor_tool(analysis["illness"])
+    medicine = medicine_tool(analysis["illness"])
+
+    return {
+        "plan": plan,
+        "doctor": doctor,
+        "medicine": medicine
+    }

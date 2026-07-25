@@ -1,4 +1,4 @@
-def response_agent(analysis, plan):
+def response_agent(analysis, planning):
 
     print("\n========== AI SMART HOSPITAL ASSISTANT ==========\n")
 
@@ -7,7 +7,12 @@ def response_agent(analysis, plan):
 
     print("\nRecommended Care Plan:")
 
-    for item in plan:
-        print(item)
+    for item in planning["plan"]:
+
+        if item.strip() != "":
+            print(item)
+
+    print("\nRecommended Doctor :")
+    print(planning["doctor"])
 
     print("\n===============================================")
