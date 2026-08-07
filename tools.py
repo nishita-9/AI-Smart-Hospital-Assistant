@@ -1,43 +1,33 @@
-from config import llm
+from langchain_core.tools import tool
 
-def doctor_tool(illness):
-    prompt = f"""
-A patient has {illness}.
 
-Suggest the most suitable doctor.
+@tool
+def doctor_tool(doctor: str) -> str:
+    """
+    Returns the recommended doctor specialization.
+    """
+    return doctor
 
-Return only the doctor's specialization.
 
-Example:
-General Physician
-Cardiologist
-Neurologist
+@tool
+def medicine_tool(medicine: str) -> str:
+    """
+    Returns the recommended medicine.
+    """
+    return medicine
+
+
+@tool
+def emergency_tool() -> str:
+    """
+    Returns emergency instructions.
+    """
+
+    return """
+🚨 Emergency Detected!
+
+• Visit the nearest hospital immediately.
+• Call emergency medical services if required.
+• Do not ignore severe symptoms.
+• Follow professional medical advice.
 """
-
-    response = llm.invoke(prompt)
-    return response.content.strip()
-
-
-def medicine_tool(illness):
-    prompt = f"""
-A patient has {illness}.
-
-Suggest only 2 general care recommendations.
-
-Do not prescribe strong medicines.
-Keep the answer short.
-"""
-
-    response = llm.invoke(prompt)
-    return response.content.strip()
-
-
-def emergency_tool():
-    prompt = """
-A patient has an emergency.
-
-Return only the emergency helpline number and one short instruction.
-"""
-
-    response = llm.invoke(prompt)
-    return response.content.strip()

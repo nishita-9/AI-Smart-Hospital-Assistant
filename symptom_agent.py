@@ -1,39 +1,68 @@
 import json
 from config import llm
-from memory import save_memory
+from memory_agent import save_memory
 
-def symptom_agent(symptoms):
+def symptom_agent(patient_name, symptoms):
 
     prompt = f"""
-You are a medical assistant.
+You are an AI Smart Hospital Assistant.
 
-Analyze these symptoms:
+Analyze the following symptoms:
 {", ".join(symptoms)}
 
-Return ONLY a JSON object like this:
+Return ONLY a valid JSON object in the following format.
+Do NOT include markdown or explanations.
 
 {{
     "illness": "Common Cold",
-    "severity": "Low"
+    "severity": "Low",
+
+    "cause": "Short explanation of what causes this illness",
+
+    "doctor": "General Physician",
+
+    "medicine": "Paracetamol",
+
+    "precautions": [
+        "Precaution 1",
+        "Precaution 2",
+        "Precaution 3"
+    ],
+
+    "care_plan": [
+        "Care Step 1",
+        "Care Step 2",
+        "Care Step 3"
+    ]
 }}
 """
 
     response = llm.invoke(prompt)
-    result = response.content
+
+    result = response.content.strip()
 
     result = result.replace("```json", "")
     result = result.replace("```", "")
     result = result.strip()
 
     try:
+
         data = json.loads(result)
 
-        save_memory(symptoms, data)
+        save_memory(patient_name, symptoms, data)
 
         return data
 
-    except:
+    except Exception as e:
+
+        print("JSON Error:", e)
+
         return {
             "illness": "Unknown",
-            "severity": "Unknown"
+            "severity": "Unknown",
+            "cause": "Unknown",
+            "doctor": "Unknown",
+            "medicine": "Unknown",
+            "precautions": [],
+            "care_plan": []
         }
