@@ -2,7 +2,7 @@ from graph import hospital_graph
 from response_agent import response_agent
 from tools import emergency_tool
 from database import create_database
-from memory_agent import get_short_term_memory
+from memory import get_short_term_memory
 from chat_agent import chat_agent
 
 create_database()
@@ -14,7 +14,9 @@ print("=" * 50)
 
 # Patient Details
 # -----------------------------
+username = input("Enter Username: ")
 patient_name = input("Enter Patient Name: ")
+
 user_input = input("Enter symptoms (comma separated): ")
 symptoms = [s.strip() for s in user_input.split(",")]
 
@@ -22,6 +24,7 @@ symptoms = [s.strip() for s in user_input.split(",")]
 # LangGraph State
 # -----------------------------
 state = {
+    "username": username,
     "patient_name": patient_name,
     "symptoms": symptoms
 }

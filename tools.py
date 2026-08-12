@@ -1,6 +1,5 @@
 from langchain_core.tools import tool
 
-
 @tool
 def doctor_tool(doctor: str) -> str:
     """

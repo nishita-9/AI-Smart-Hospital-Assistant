@@ -11,6 +11,7 @@ from planning_agent import planning_agent
 # Graph State
 # -----------------------------
 class HospitalState(TypedDict):
+    username: str
     patient_name: str
     symptoms: list
     decision: dict
@@ -22,7 +23,6 @@ class HospitalState(TypedDict):
 # Decision Node
 # -----------------------------
 def decision_node(state: HospitalState):
-
     decision = decision_agent(state["symptoms"])
     state["decision"] = decision
     return state
@@ -31,15 +31,10 @@ def decision_node(state: HospitalState):
 # Symptom Node
 # -----------------------------
 def symptom_node(state: HospitalState):
-
     if state["decision"]["emergency"]:
         return state
 
-    analysis = symptom_agent(
-        state["patient_name"],
-        state["symptoms"]
-    )
-
+    analysis = symptom_agent(state["username"], state["patient_name"], state["symptoms"])
     state["analysis"] = analysis
     return state
 
@@ -47,14 +42,10 @@ def symptom_node(state: HospitalState):
 # Research Node
 # -----------------------------
 def research_node(state: HospitalState):
-
     if state["decision"]["emergency"]:
         return state
 
-    research = research_agent(
-        state["analysis"]
-    )
-
+    research = research_agent(state["analysis"])
     state["research"] = research
     return state
 
@@ -62,15 +53,10 @@ def research_node(state: HospitalState):
 # Planning Node
 # -----------------------------
 def planning_node(state: HospitalState):
-
     if state["decision"]["emergency"]:
         return state
 
-    planning = planning_agent(
-        state["analysis"],
-        state["research"]
-    )
-
+    planning = planning_agent(state["analysis"], state["research"])
     state["planning"] = planning
     return state
 

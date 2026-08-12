@@ -1,8 +1,8 @@
 import json
 from config import llm
-from memory_agent import save_memory
+from memory import save_memory
 
-def symptom_agent(patient_name, symptoms):
+def symptom_agent(username, patient_name, symptoms):
 
     prompt = f"""
 You are an AI Smart Hospital Assistant.
@@ -48,13 +48,10 @@ Do NOT include markdown or explanations.
     try:
 
         data = json.loads(result)
-
-        save_memory(patient_name, symptoms, data)
-
+        save_memory(username, patient_name, symptoms, data)
         return data
 
     except Exception as e:
-
         print("JSON Error:", e)
 
         return {

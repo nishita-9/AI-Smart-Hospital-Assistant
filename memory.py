@@ -4,10 +4,11 @@ from datetime import datetime
 # Short-Term Memory
 short_term_memory = []
 
-def save_memory(patient_name, symptoms, analysis):
+def save_memory(username, patient_name, symptoms, analysis):
 
     # ---------- Short-Term Memory ----------
     short_term_memory.append({
+        "username": username,
         "patient_name": patient_name,
         "symptoms": symptoms,
         "analysis": analysis
@@ -16,15 +17,14 @@ def save_memory(patient_name, symptoms, analysis):
 
     # ---------- Long-Term Memory ----------
     conn = sqlite3.connect("hospital.db")
-
     cursor = conn.cursor()
-
     cursor.execute(
         """
-        INSERT INTO memory(patient_name, symptoms, illness, severity, visit_time)
-        VALUES(?,?,?,?,?)
+        INSERT INTO memory(username, patient_name, symptoms, illness, severity, visit_time)
+        VALUES(?,?,?,?,?,?)
         """,
         (
+            username,
             patient_name,
             ",".join(symptoms),
             analysis["illness"],
@@ -43,21 +43,18 @@ def get_short_term_memory():
 
     return None
 
-def get_last_memory():
-
+def get_user_records(username):
     conn = sqlite3.connect("hospital.db")
-
     cursor = conn.cursor()
-
     cursor.execute("""
     SELECT patient_name, symptoms, illness, severity, visit_time
     FROM memory
+    WHERE username = ?               
     ORDER BY id DESC
-    LIMIT 1
-    """)
+    """,
+    (username,)
+    )
 
-    data = cursor.fetchone()
-
+    records = cursor.fetchall()
     conn.close()
-
-    return data
+    return records

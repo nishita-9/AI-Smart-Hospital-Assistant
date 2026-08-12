@@ -3,9 +3,9 @@ import streamlit as st
 from graph import hospital_graph
 from database import create_database
 from tools import emergency_tool
-from memory_agent import get_short_term_memory
+from memory import get_short_term_memory
 from chat_agent import chat_agent
-
+from auth import authenticate, register_user
 
 # Basic page setup
 # ------------------------------------------------------------
@@ -16,7 +16,6 @@ st.set_page_config(
 )
 
 create_database()
-
 
 # Simple custom styling 
 # ------------------------------------------------------------
@@ -81,12 +80,63 @@ st.markdown("""
 # (Streamlit reruns the whole script every time you click something,
 # so we store our results here instead of losing them)
 # ------------------------------------------------------------
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "username" not in st.session_state:
+    st.session_state.username = ""
+    
 if "result" not in st.session_state:
     st.session_state.result = None
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+# Login / Register
+# ------------------------------------------------------------
+if not st.session_state.logged_in:
+    st.title("🏥 AI Smart Hospital Assistant")
+    st.write("Login to access your hospital assistant.")
+    login_tab, register_tab = st.tabs(["🔐 Login", "📝 Create Account"])
+
+    # LOGIN
+    # --------------------------------------------------------
+    with login_tab:
+        st.subheader("Login")
+        login_username = st.text_input("Username", key="login_username")
+        login_password = st.text_input("Password", type="password", key="login_password")
+
+        if st.button("Login", key="login_button"):
+            if authenticate(login_username, login_password):
+                st.session_state.logged_in = True
+                st.session_state.username = login_username
+                st.success("Login successful!")
+                st.rerun()
+            else:
+                st.error("Invalid username or password.")
+
+    # CREATE ACCOUNT
+    # --------------------------------------------------------
+    with register_tab:
+        st.subheader("Create New Account")
+        new_username = st.text_input("Username", key="new_username")
+        new_password = st.text_input("Password", type="password", key="new_password")
+
+        if st.button("Create Account", key="register_button"):
+            if not new_username or not new_password:
+                st.warning("Please enter username and password.")
+            else:
+                success, message = register_user(new_username, new_password)
+
+                if success:
+                    st.success(message)
+                    st.info(
+                        "Your account has been created. "
+                        "Please go to the Login tab."
+                    )
+                else:
+                    st.error(message)
+    st.stop()
 
 # Header
 # ------------------------------------------------------------
@@ -98,10 +148,19 @@ st.markdown('<div class="app-subtitle">Describe your symptoms and get an AI-gene
 # ------------------------------------------------------------
 with st.sidebar:
     st.header("🏥 AI Hospital Assistant")
-    st.caption("Enter symptoms to get an AI-generated care plan.")
-
+    st.caption(
+        f"Logged in as: {st.session_state.username}"
+    )
     st.divider()
+
     if st.button("🔄 Start New Consultation"):
+        st.session_state.result = None
+        st.session_state.chat_history = []
+        st.rerun()
+
+    if st.button("🚪 Logout"):
+        st.session_state.logged_in = False
+        st.session_state.username = ""
         st.session_state.result = None
         st.session_state.chat_history = []
         st.rerun()
@@ -110,11 +169,8 @@ with st.sidebar:
 # Step 1: Patient form (name + symptoms)
 # ------------------------------------------------------------
 with st.form("patient_form"):
-    patient_name = st.text_input("Patient Name", placeholder="e.g. John Doe")
-    symptoms_input = st.text_area(
-        "Symptoms (comma separated)",
-        placeholder="e.g. fever, headache, sore throat"
-    )
+    patient_name = st.text_input("Patient Name")
+    symptoms_input = st.text_area("Symptoms (comma separated)", placeholder="e.g. fever, headache, sore throat")
     submitted = st.form_submit_button("🔍 Analyze Symptoms")
 
 
@@ -128,8 +184,9 @@ if submitted:
 
         with st.spinner("Consulting AI agents..."):
             state = {
-                "patient_name": patient_name,
-                "symptoms": symptoms
+                 "username": st.session_state.username,
+                 "patient_name": patient_name,
+                 "symptoms": symptoms
             }
             result = hospital_graph.invoke(state)
 

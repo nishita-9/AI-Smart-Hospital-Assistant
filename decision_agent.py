@@ -1,5 +1,3 @@
-from memory_agent import get_last_memory
-
 EMERGENCY_SYMPTOMS = [
     "chest pain",
     "difficulty breathing",
@@ -8,8 +6,7 @@ EMERGENCY_SYMPTOMS = [
 ]
 
 def decision_agent(symptoms):
-    symptoms = [s.lower().strip() for s in symptoms]
-    previous = get_last_memory()
+    symptoms = [symptom.lower().strip() for symptom in symptoms]
 
     for symptom in symptoms:
         if symptom in EMERGENCY_SYMPTOMS:

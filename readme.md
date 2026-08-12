@@ -3,9 +3,9 @@
 ## 📌 Project Overview
 AI Smart Hospital Assistant is an intelligent healthcare assistant developed using **Python, Streamlit, LangChain, LangGraph, Google Gemini API, and SQLite**.
 
-The application allows users to enter their symptoms, analyzes them using AI, predicts the possible illness and severity, recommends an appropriate doctor, suggests common medicines, provides precautions and a care plan, and supports follow-up healthcare questions through a conversational interface.
+The application allows users to enter their symptoms and receive an AI-generated analysis of their possible illness and severity. It also provides healthcare precautions, a care plan, doctor and medicine recommendations, and allows users to ask follow-up healthcare questions through a conversational interface.
 
-The project demonstrates **multi-agent AI architecture, LangGraph workflow execution, LangChain tools, short-term and long-term memory, conversational AI, and a user-friendly Streamlit interface.**
+The project demonstrates **multi-agent AI architecture, LangGraph workflow orchestration, LangChain tools, short-term and long-term memory, conversational AI, authentication and a user-friendly Streamlit interface.**
 
 
 # 🎯 Objectives
@@ -18,6 +18,8 @@ The project demonstrates **multi-agent AI architecture, LangGraph workflow execu
 - Answer follow-up healthcare questions.
 - Store patient consultation history.
 - Demonstrate multi-agent coordination using LangGraph.
+- Provide a simple and interactive Streamlit interface.
+- Prepare the application for cloud deployment.
 
 
 # 🚀 Features
@@ -34,7 +36,7 @@ The project demonstrates **multi-agent AI architecture, LangGraph workflow execu
 -  LangGraph workflow execution
 -  LangChain custom tools
 -  Consultation history storage
-
+-  Cloud deployment support
 
 # 🛠 Technologies Used
 - Python
@@ -43,68 +45,65 @@ The project demonstrates **multi-agent AI architecture, LangGraph workflow execu
 - LangGraph
 - Google Gemini API
 - SQLite
-- Python Dotenv
 
 
 # 🏗 System Architecture
 ```
-                Patient
-
-                   │
-
-                   ▼
-
-          Streamlit User Interface
-
-                   │
-
-                   ▼
-
-             LangGraph Workflow
-
-                   │
-
-      ┌───────────────────────────┐
-
-      ▼                           ▼
-
-Decision Agent            Symptom Agent
-
-                                   │
-
-                                   ▼
-
-                           Research Agent
-
-                                   │
-
-                                   ▼
-
-                           Planning Agent
-
-                                   │
-
-                                   ▼
-
-                            Memory Agent
-
-                                   │
-
-                                   ▼
-
-                           Response Agent
-
-                                   │
-
-                                   ▼
-
-                             Chat Agent
-
-                                   │
-
-                                   ▼
-
-                              Final Output
+                         USER
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │   Authentication    │
+                │ Login / Registration│
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │   Streamlit UI      │
+                │     Dashboard       │
+                └──────────┬──────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │     LangGraph       │
+                │Workflow Orchestrator│
+                └──────────┬──────────┘
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ▼                ▼                ▼
+   Decision Agent    Symptom Agent    Research Agent
+          │                │                │
+          │                └───────┬────────┘
+          │                        │
+          │                        ▼
+          │                Planning Agent
+          │                        │
+          │                ┌───────┴────────┐
+          │                │                │
+          │                ▼                ▼
+          │          Doctor Tool      Medicine Tool
+          │
+          ▼
+   Emergency Handling
+                           │
+                           ▼
+                   Response Agent
+                           │
+                           ▼
+                    Final Results
+                           │
+                           ▼
+                    Chat Agent
+                           │
+                           ▼
+                 Follow-up Questions
+                           │
+                           ▼
+                 Short-Term Memory
+                           │
+                           ▼
+                    SQLite Database
 ```
 
 # 🤖 Specialized AI Agents
@@ -115,7 +114,7 @@ Decision Agent            Symptom Agent
 - Stop further execution in emergency cases.
 
 ## 2. Symptom Agent
-Uses Google Gemini AI to:
+Uses Google Gemini API through LangChain to:
 - Analyze symptoms
 - Predict illness
 - Determine severity
@@ -136,7 +135,7 @@ Uses Google Gemini AI to:
 - Prepare medicine recommendation.
 - Prepare care plan.
 
-## 5. Memory Agent
+## 5. Memory 
 ### Short-Term Memory
 Stores current consultation during execution.
 
@@ -165,7 +164,9 @@ Stores consultation history inside SQLite database.
 The project provides a simple and interactive web interface using Streamlit.
 
 Users can:
-- Enter patient name
+- Create an account
+- Log in
+- Enter patient details
 - Enter symptoms
 - View diagnosis
 - View doctor recommendation
@@ -189,27 +190,31 @@ AI Smart Hospital Assistant
 ├── config.py               # Gemini configuration
 ├── database.py             # SQLite database creation
 ├── hospital.db             # Long-term memory database
+│
+├── auth.py   
+├── memory.py
+│
 ├── decision_agent.py
 ├── symptom_agent.py
 ├── research_agent.py
 ├── planning_agent.py
 ├── response_agent.py
-├── memory_agent.py
 ├── chat_agent.py
+│
 ├── tools.py
 ├── api_connector.py
-├── requirements.txt
+│
 ├── .env
 └── README.md
 ```
 
 # 🎯 Project Outcomes
 - Designed multiple specialized AI agents.
-- Implemented agent communication using LangGraph.
-- Developed short-term conversational memory.
-- Developed long-term knowledge retention using SQLite.
-- Enabled context-aware healthcare conversations.
+- Implemented LangGraph-based workflow orchestration.
 - Implemented LangChain tools.
+- Developed short-term conversational memory.
+- Developed long-term memory using SQLite.
+- Implemented follow-up conversational interaction.
 - Integrated Streamlit frontend.
 - Built an end-to-end AI healthcare assistant.
 
@@ -218,5 +223,6 @@ AI Smart Hospital Assistant
 - Medical report upload
 - Appointment booking
 - Hospital management integration
-- Authentication system
 - Real-time healthcare APIs
+- Notification system.
+- Advanced monitoring and analytics.
