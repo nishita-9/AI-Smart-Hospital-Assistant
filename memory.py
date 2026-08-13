@@ -1,60 +1,79 @@
-import sqlite3
-from datetime import datetime
+from database import get_connection
 
 # Short-Term Memory
+# ---------------------------------------
 short_term_memory = []
 
-def save_memory(username, patient_name, symptoms, analysis):
-
-    # ---------- Short-Term Memory ----------
+# Save Memory
+# ---------------------------------------
+def save_memory(patient_name, symptoms, analysis):
     short_term_memory.append({
-        "username": username,
         "patient_name": patient_name,
         "symptoms": symptoms,
         "analysis": analysis
     })
-    visit_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
-    # ---------- Long-Term Memory ----------
-    conn = sqlite3.connect("hospital.db")
+    # Save consultation to PostgreSQL
+    # -----------------------------------
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         """
-        INSERT INTO memory(username, patient_name, symptoms, illness, severity, visit_time)
-        VALUES(?,?,?,?,?,?)
+        INSERT INTO memory
+        (
+            patient_name,
+            symptoms,
+            illness,
+            severity
+        )
+        VALUES (%s, %s, %s, %s)
         """,
         (
-            username,
             patient_name,
-            ",".join(symptoms),
-            analysis["illness"],
-            analysis["severity"],
-            visit_time
+            ", ".join(symptoms),
+            analysis.get("illness", "Unknown"),
+            analysis.get("severity", "Unknown")
         )
     )
 
     conn.commit()
+
+    cursor.close()
     conn.close()
 
+
+# Get Short-Term Memory
+# ---------------------------------------
 def get_short_term_memory():
+    if not short_term_memory:
+        return None
 
-    if short_term_memory:
-        return short_term_memory[-1]
+    return short_term_memory[-1]
 
-    return None
 
-def get_user_records(username):
-    conn = sqlite3.connect("hospital.db")
+# Get Last Consultation
+# ---------------------------------------
+def get_last_memory():
+    conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-    SELECT patient_name, symptoms, illness, severity, visit_time
-    FROM memory
-    WHERE username = ?               
-    ORDER BY id DESC
-    """,
-    (username,)
+
+    cursor.execute(
+        """
+        SELECT
+            patient_name,
+            symptoms,
+            illness,
+            severity,
+            visit_time
+        FROM memory
+        ORDER BY id DESC
+        LIMIT 1
+        """
     )
 
-    records = cursor.fetchall()
+    data = cursor.fetchone()
+
+    cursor.close()
     conn.close()
-    return records
+
+    return data

@@ -14,10 +14,8 @@ venv/
 # VS Code
 .vscode/
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
+# PostgreSQL / database secrets
+.streamlit/secrets.toml
 
 # Logs
 *.log

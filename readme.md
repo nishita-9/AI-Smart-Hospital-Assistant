@@ -1,7 +1,7 @@
 # 🏥 AI Smart Hospital Assistant
 
 ## 📌 Project Overview
-AI Smart Hospital Assistant is an intelligent healthcare assistant developed using **Python, Streamlit, LangChain, LangGraph, Google Gemini API, and SQLite**.
+AI Smart Hospital Assistant is an intelligent healthcare assistant developed using **Python, Streamlit, LangChain, LangGraph, Google Gemini API, and PostgreSQL**.
 
 The application allows users to enter their symptoms and receive an AI-generated analysis of their possible illness and severity. It also provides healthcare precautions, a care plan, doctor and medicine recommendations, and allows users to ask follow-up healthcare questions through a conversational interface.
 
@@ -44,7 +44,7 @@ The project demonstrates **multi-agent AI architecture, LangGraph workflow orche
 - LangChain
 - LangGraph
 - Google Gemini API
-- SQLite
+- PostgreSQL
 
 
 # 🏗 System Architecture
@@ -103,7 +103,7 @@ The project demonstrates **multi-agent AI architecture, LangGraph workflow orche
                  Short-Term Memory
                            │
                            ▼
-                    SQLite Database
+                 PostgreSQL Database
 ```
 
 # 🤖 Specialized AI Agents
@@ -140,7 +140,7 @@ Uses Google Gemini API through LangChain to:
 Stores current consultation during execution.
 
 ### Long-Term Memory
-Stores consultation history inside SQLite database.
+Stores consultation history inside PostgreSQL database.
 - Patient Name
 - Symptoms
 - Illness
@@ -213,7 +213,7 @@ AI Smart Hospital Assistant
 - Implemented LangGraph-based workflow orchestration.
 - Implemented LangChain tools.
 - Developed short-term conversational memory.
-- Developed long-term memory using SQLite.
+- Developed long-term memory using PostgreSQL.
 - Implemented follow-up conversational interaction.
 - Integrated Streamlit frontend.
 - Built an end-to-end AI healthcare assistant.

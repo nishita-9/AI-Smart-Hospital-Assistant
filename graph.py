@@ -34,7 +34,7 @@ def symptom_node(state: HospitalState):
     if state["decision"]["emergency"]:
         return state
 
-    analysis = symptom_agent(state["username"], state["patient_name"], state["symptoms"])
+    analysis = symptom_agent(state["patient_name"], state["symptoms"])
     state["analysis"] = analysis
     return state
 
