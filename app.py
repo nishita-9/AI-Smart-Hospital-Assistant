@@ -1,5 +1,6 @@
 import streamlit as st
-
+from metrics import save_metric
+import time
 from graph import hospital_graph
 from database import create_database
 from tools import emergency_tool
@@ -360,22 +361,36 @@ if submitted:
     else:
         symptoms = [s.strip() for s in symptoms_input.split(",") if s.strip()]
 
-        with st.spinner("Consulting AI agents..."):
-            state = {
-                 "username": st.session_state.username,
-                 "patient_name": patient_name,
-                 "symptoms": symptoms
+        try:
+            with st.spinner("Consulting AI agents..."):
+                state = {
+                    "username": st.session_state.username,
+                    "patient_name": patient_name,
+                    "symptoms": symptoms
+                }
+
+                start_time = time.time()
+                result = hospital_graph.invoke(state)
+
+                response_time = time.time() - start_time
+                save_metric("consultation", 1)
+                save_metric("response_time", response_time)
+
+                if result["decision"]["emergency"]:
+                    save_metric("emergency", 1)
+
+            st.session_state.result = result
+            st.session_state.chat_history = []
+            st.session_state.memory = {
+                "patient_name": patient_name,
+                "symptoms": symptoms,
+                "analysis": result.get("analysis", {})
             }
-            result = hospital_graph.invoke(state)
 
-        st.session_state.result = result
-        st.session_state.chat_history = []
-        st.session_state.memory = {
-             "patient_name": patient_name,
-             "symptoms": symptoms,
-             "analysis": result.get("analysis", {})
-        }
-
+        except Exception as e:
+            save_metric("error", 1)
+            st.error("Something went wrong.")
+            
 # Step 2: Show the results 
 # ------------------------------------------------------------
 result = st.session_state.result

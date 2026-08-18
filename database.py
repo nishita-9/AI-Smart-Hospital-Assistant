@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def get_connection():
     """
     Connect to PostgreSQL database.
@@ -48,6 +49,17 @@ def create_database():
             illness VARCHAR(200),
             severity VARCHAR(50),
             visit_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Metrics table
+    # -----------------------------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS metrics (
+            id SERIAL PRIMARY KEY,
+            metric_name VARCHAR(100),
+            metric_value NUMERIC,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
